@@ -1,0 +1,15 @@
+{
+  "name": "ecomm-microservices",
+  "version": "1.0.0",
+  "description": "<h1>Mini-Ecommerce Microservices Project</h1>\r <h4>Overview</h4>\r <p>This project is an ecommerce application built with a microservices architecture. It consists of three main services:\r <ol>\r <li>Auth Service: Responsible for user authentication and authorization.</li>\r <li>Order Service: Handles order management, including creation, updating, and tracking orders.</li>\r <li>Product Service: Manages product information, such as listing products, updating inventory, and retrieving product details.</li>\r These services communicate with each other asynchronously using RabbitMQ as the message queue.\r </ol>\r </p><br>\r <h4>Prerequisites</h4>\r <ul>\r <li>Node.js and npm installed locally</li>\r <li>MongoDB installed and running</li>\r <li>RabbitMQ installed and running</li>\r </ul>",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "jsonwebtoken": "^9.0.2"
+  }
+}
