@@ -5,6 +5,7 @@ const PORT = process.env.PORT_ONE || 8080;
 const jwt = require("jsonwebtoken");
 const amqp = require("amqplib");
 const Product = require("./Product");
+const isAuthenticated = require("../isAuthenticated");
 
 app.use(express.json());
 
@@ -30,3 +31,18 @@ async function connect() {
 }
 
 connect();
+
+app.post("/product/create", isAuthenticated, async (req, res) => {
+  const { name, description, price } = req.body;
+  try {
+    const newProduct = new Product({
+      name,
+      description,
+      price,
+    });
+    await newProduct.save();
+    return res.json(newProduct);
+  } catch (error) {
+    console.log(error);
+  }
+});
