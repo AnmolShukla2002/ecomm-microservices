@@ -46,3 +46,10 @@ app.post("/product/create", isAuthenticated, async (req, res) => {
     console.log(error);
   }
 });
+
+app.post("/product/buy", isAuthenticated, async (req, res) => {
+  const { ids } = req.body;
+  try {
+    const products = await Product.find({ _id: { $in: ids } });
+  } catch (error) {}
+});
