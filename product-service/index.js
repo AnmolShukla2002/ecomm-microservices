@@ -9,7 +9,7 @@ const isAuthenticated = require("../isAuthenticated");
 
 app.use(express.json());
 
-var channel, connection;
+var channel, connection, order;
 
 mongoose
   .connect("mongodb://localhost/product-service")
@@ -26,7 +26,7 @@ mongoose
 async function connect() {
   const amqpServer = "amqp://localhost:5672";
   connection = await amqp.connect(amqpServer);
-  channel = await connection.createChannel(); // Await the creation of the channel
+  channel = await connection.createChannel();
   channel.assertQueue("PRODUCT");
 }
 
@@ -51,7 +51,6 @@ app.post("/product/buy", isAuthenticated, async (req, res) => {
   const { ids } = req.body;
   try {
     const products = await Product.find({ _id: { $in: ids } });
-    // Check if channel is initialized
     if (channel) {
       channel.sendToQueue(
         "ORDER",
@@ -62,6 +61,12 @@ app.post("/product/buy", isAuthenticated, async (req, res) => {
           })
         )
       );
+      channel.consume("PRODUCT", (data) => {
+        console.log("Consuming PRODUCT queue");
+        order = JSON.parse(data.content);
+        channel.ack(data);
+      });
+      return res.json(order);
     } else {
       console.error("Channel is not initialized");
     }
