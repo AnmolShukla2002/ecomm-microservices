@@ -4,6 +4,7 @@ const app = express();
 const PORT = process.env.PORT_ONE || 8080;
 const jwt = require("jsonwebtoken");
 const amqp = require("amqplib");
+const Product = require("./Product");
 
 app.use(express.json());
 
