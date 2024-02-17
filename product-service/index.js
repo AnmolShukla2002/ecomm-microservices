@@ -26,8 +26,8 @@ mongoose
 async function connect() {
   const amqpServer = "amqp://localhost:5672";
   connection = await amqp.connect(amqpServer);
-  channel = connection.createChannel();
-  (await channel).assertQueue("PRODUCT");
+  channel = await connection.createChannel(); // Await the creation of the channel
+  channel.assertQueue("PRODUCT");
 }
 
 connect();
@@ -51,5 +51,21 @@ app.post("/product/buy", isAuthenticated, async (req, res) => {
   const { ids } = req.body;
   try {
     const products = await Product.find({ _id: { $in: ids } });
-  } catch (error) {}
+    // Check if channel is initialized
+    if (channel) {
+      channel.sendToQueue(
+        "ORDER",
+        Buffer.from(
+          JSON.stringify({
+            products,
+            userEmail: req.user.email,
+          })
+        )
+      );
+    } else {
+      console.error("Channel is not initialized");
+    }
+  } catch (error) {
+    console.log(error);
+  }
 });

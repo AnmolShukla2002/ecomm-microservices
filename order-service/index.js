@@ -25,8 +25,14 @@ mongoose
 async function connect() {
   const amqpServer = "amqp://localhost:5672";
   connection = await amqp.connect(amqpServer);
-  channel = connection.createChannel();
-  (await channel).assertQueue("ORDER");
+  channel = await connection.createChannel();
+  channel.assertQueue("ORDER");
 }
 
-connect();
+connect().then(() => {
+  channel.consume("ORDER", (data) => {
+    const { products, userEmail } = JSON.parse(data.content.toString());
+    console.log("Consuming ORDER queue");
+    console.log(products);
+  });
+});
